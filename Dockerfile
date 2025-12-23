@@ -1,5 +1,6 @@
 FROM wordpress:latest
 
-# Força un únic MPM i evita el crash
-RUN a2dismod mpm_event mpm_worker 2>/dev/null || true \
- && a2enmod mpm_prefork rewrite
+# Deixa només 1 MPM actiu (prefork) eliminant qualsevol mpm_* habilitat
+RUN rm -f /etc/apache2/mods-enabled/mpm_*.load /etc/apache2/mods-enabled/mpm_*.conf \
+ && a2enmod mpm_prefork rewrite \
+ && apache2ctl -M | grep mpm
